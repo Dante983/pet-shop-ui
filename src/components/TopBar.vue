@@ -1,6 +1,6 @@
 <template>
   <div class="top-bar">
-    <div class="brand-logo">PetShop</div>
+    <div class="brand-logo">PetShop!</div>
     <div class="nav-links">
       <router-link to="/products">Products</router-link>
       <router-link to="/promotions">Promotions</router-link>
