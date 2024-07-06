@@ -3,6 +3,8 @@ import Products from "@/views/Products.vue";
 import Promotions from "@/views/Promotions.vue";
 import Blog from "@/views/Blog.vue";
 import Cart from "@/views/Cart.vue";
+import RecoverPassword from "@/views/RecoverPassword.vue";
+import ResetPassword from "@/views/ResetPassword.vue";
 
 const routes = [
   {
@@ -24,6 +26,16 @@ const routes = [
     path: "/cart",
     name: "Cart",
     component: Cart,
+  },
+  {
+    path: "/recover-password",
+    name: "recover-password",
+    component: RecoverPassword,
+  },
+  {
+    path: "/forgot-password",
+    name: "reset-password",
+    component: ResetPassword,
   },
 ];
 

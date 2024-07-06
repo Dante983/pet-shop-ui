@@ -15,7 +15,9 @@
         <button type="submit">Login</button>
       </form>
       <div class="links">
-        <a href="#">Forgot password?</a>
+        <router-link to="/recover-password" @click="$emit('close')"
+          >Forgot password?</router-link
+        >
         <a href="#" @click.prevent="$emit('openSignUp')"
           >Don’t have an account? Sign Up</a
         >

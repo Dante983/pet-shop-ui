@@ -2,16 +2,23 @@
   <div class="recover-password">
     <h2>Recover Password</h2>
     <p>
-      Enter the email associated with your account and we’ll send an email with
-      instructions to reset your password.
+      Enter the email associated with your account and we’ll generate a link to
+      reset your password.
     </p>
-    <form @submit.prevent="recoverPassword">
+    <form @submit.prevent="recoverPassword" v-if="!linkSent">
       <div>
         <label for="email">Email Address *</label>
         <input type="email" id="email" v-model="email" required />
       </div>
       <button type="submit">Get Recovery Link</button>
     </form>
+    <div v-else class="modal">
+      <div class="modal-content">
+        <span class="close" @click="linkSent = false">&times;</span>
+        <p>Click on the URL and change your password:</p>
+        <a :href="recoveryLink">{{ recoveryLink }}</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -22,22 +29,27 @@ export default {
   data() {
     return {
       email: "",
+      linkSent: false,
+      recoveryLink: "",
     };
   },
   methods: {
     async recoverPassword() {
       try {
-        await axios.post(
-          `${process.env.VUE_APP_ROOT_API}/api/v1/user/recover-password`,
+        const response = await axios.post(
+          `${process.env.VUE_APP_ROOT_API}/api/v1/user/forgot-password`,
           {
             email: this.email,
           }
         );
-        alert("A recovery link has been sent to your email.");
+
+        localStorage.setItem("recoveryEmail", this.email); // Store email in local storage
+        this.recoveryLink = response.data.recovery_link;
+        this.linkSent = true;
       } catch (error) {
         console.error(error);
         alert(
-          "There was an error sending the recovery link. Please try again."
+          "There was an error generating the recovery link. Please try again."
         );
       }
     },
@@ -86,5 +98,31 @@ button {
 }
 button:hover {
   background-color: #45b382;
+}
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 400px;
+  text-align: center;
+  position: relative;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px;
 }
 </style>
