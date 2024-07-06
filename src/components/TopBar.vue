@@ -1,5 +1,6 @@
 <template>
   <div class="top-bar">
+    <img src="@/assets/logo.png" alt="PetShop Logo" />
     <div class="brand-logo">petson.</div>
     <div class="nav-links">
       <router-link to="/">PRODUCTS</router-link>

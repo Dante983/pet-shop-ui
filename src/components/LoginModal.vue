@@ -14,6 +14,12 @@
         </div>
         <button type="submit">Login</button>
       </form>
+      <div class="links">
+        <a href="#">Forgot password?</a>
+        <a href="#" @click.prevent="$emit('openSignUp')"
+          >Don’t have an account? Sign Up</a
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -78,5 +84,17 @@ export default {
 .close {
   float: right;
   cursor: pointer;
+}
+.links {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.links a {
+  color: #4ec690;
+  text-decoration: none;
+}
+.links a:hover {
+  text-decoration: underline;
 }
 </style>

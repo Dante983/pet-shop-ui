@@ -1,54 +1,51 @@
 <template>
-  <div v-if="show" class="modal-overlay" @click.self="closeModal">
-    <div class="modal">
-      <img src="@/assets/logo.png" alt="Logo" class="modal-logo" />
+  <div v-if="isVisible" class="modal">
+    <div class="modal-content">
+      <span class="close" @click="$emit('close')">&times;</span>
+      <img src="@/assets/logo.png" alt="petson logo" class="logo" />
       <h2>Sign up</h2>
       <form @submit.prevent="signUp">
-        <div class="form-group">
+        <div class="name-fields">
+          <div>
+            <label for="first-name">First Name *</label>
+            <input type="text" id="first-name" v-model="firstName" required />
+          </div>
+          <div>
+            <label for="last-name">Last Name *</label>
+            <input type="text" id="last-name" v-model="lastName" required />
+          </div>
+        </div>
+        <div>
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" v-model="email" required />
+        </div>
+        <div>
+          <label for="password">Password *</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
+        <div>
+          <label for="confirm-password">Confirm Password *</label>
           <input
-            type="text"
-            v-model="firstName"
-            placeholder="First Name *"
-            required
-          />
-          <input
-            type="text"
-            v-model="lastName"
-            placeholder="Last Name *"
+            type="password"
+            id="confirm-password"
+            v-model="confirmPassword"
             required
           />
         </div>
-        <input
-          type="email"
-          v-model="email"
-          placeholder="Email Address *"
-          required
-        />
-        <input
-          type="password"
-          v-model="password"
-          placeholder="Password *"
-          required
-        />
-        <input
-          type="password"
-          v-model="confirmPassword"
-          placeholder="Confirm Password *"
-          required
-        />
-        <div class="form-group">
-          <input type="checkbox" v-model="receiveMarketing" />
-          <label
+        <div class="newsletter">
+          <input type="checkbox" id="is_marketing" v-model="is_marketing" />
+          <label for="is_marketing"
             >I want to receive inspiration, marketing promotions and updates via
             email.</label
           >
         </div>
-        <button type="submit">SIGN UP</button>
+        <button type="submit">Sign up</button>
       </form>
-      <p class="login-link">
-        Already have an account?
-        <a href="#" @click.prevent="goToLogin">Log in</a>
-      </p>
+      <div class="links">
+        <a href="#" @click.prevent="$emit('openLogin')"
+          >Already have an account? Log in</a
+        >
+      </div>
     </div>
   </div>
 </template>
@@ -57,8 +54,7 @@
 import axios from "axios";
 
 export default {
-  name: "SignUpModal",
-  props: ["show"],
+  props: ["isVisible"],
   data() {
     return {
       firstName: "",
@@ -66,16 +62,10 @@ export default {
       email: "",
       password: "",
       confirmPassword: "",
-      receiveMarketing: false,
+      is_marketing: false,
     };
   },
   methods: {
-    closeModal() {
-      this.$emit("close");
-    },
-    goToLogin() {
-      this.$emit("switchToLogin");
-    },
     async signUp() {
       if (this.password !== this.confirmPassword) {
         alert("Passwords do not match");
@@ -84,20 +74,29 @@ export default {
 
       try {
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/v1/user/create",
+          `${process.env.VUE_APP_ROOT_API}/api/v1/user/create`,
           {
             first_name: this.firstName,
             last_name: this.lastName,
             email: this.email,
             password: this.password,
-            receive_marketing: this.receiveMarketing,
+            is_marketing: this.is_marketing,
+            password_confirmation: this.confirmPassword,
           }
         );
-        console.log(response);
-        alert("Sign up successful");
-        this.closeModal();
+
+        const { user, token, avatar_url } = response.data.data;
+
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("token", token);
+        if (avatar_url) {
+          localStorage.setItem("avatar_url", avatar_url);
+        }
+
+        this.$emit("signUpSuccess", user);
+        this.$emit("close");
       } catch (error) {
-        alert("Sign up failed: " + error.response.data.message);
+        console.error(error);
       }
     },
   },
@@ -105,78 +104,99 @@ export default {
 </script>
 
 <style scoped>
-.modal-overlay {
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-
-.modal {
+.modal-content {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 10px;
   width: 400px;
-  max-width: 90%;
-}
-
-.modal-logo {
-  display: block;
-  margin: 0 auto 20px auto;
-  width: 50px;
-}
-
-h2 {
   text-align: center;
+  position: relative;
+}
+.close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 24px;
+}
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 10px;
+}
+h2 {
   margin-bottom: 20px;
 }
-
-.form-group {
+form {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
+  flex-direction: column;
+  align-items: center;
 }
-
+label {
+  align-self: flex-start;
+  margin-bottom: 5px;
+}
 input[type="text"],
 input[type="email"],
 input[type="password"] {
-  width: calc(50% - 10px);
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-input[type="email"],
-input[type="password"] {
-  width: calc(100% - 20px);
-}
-
-input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-button {
   width: 100%;
   padding: 10px;
-  background-color: #00c897;
-  border: none;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.name-fields {
+  display: flex;
+  justify-content: space-between;
+}
+.name-fields > div {
+  flex: 1;
+  margin-right: 10px;
+}
+.name-fields > div:last-child {
+  margin-right: 0;
+}
+.newsletter {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.newsletter input {
+  margin-right: 10px;
+}
+button {
+  background-color: #4ec690;
   color: white;
-  font-weight: bold;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  width: 100%;
   cursor: pointer;
-  border-radius: 4px;
 }
-
-.login-link {
-  text-align: center;
-  margin-top: 15px;
+button:hover {
+  background-color: #45b382;
 }
-
-.login-link a {
-  color: #00c897;
+.links {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.links a {
+  color: #4ec690;
   text-decoration: none;
+}
+.links a:hover {
+  text-decoration: underline;
 }
 </style>
