@@ -33,19 +33,24 @@ export default {
     async login() {
       try {
         const response = await axios.post(
-          "http://127.0.0.1:8000/api/v1/user/login",
+          `${process.env.VUE_APP_ROOT_API}/api/v1/user/login`,
           {
             email: this.email,
             password: this.password,
           }
         );
-        const { user, token } = response.data.data;
+
+        const { user, token, avatar_url } = response.data.data;
+
+        localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        this.$emit("loginSuccess", user);
-        this.$emit("close");
+        if (avatar_url) {
+          localStorage.setItem("avatar_url", avatar_url);
+        }
+
+        this.$emit("loginSuccess", user); // Emit loginSuccess event
       } catch (error) {
-        console.error("Login error:", error);
+        console.error(error);
       }
     },
   },

@@ -7,7 +7,11 @@
       <router-link to="/blog">BLOG</router-link>
       <router-link to="/cart">CART (0)</router-link>
       <button v-if="!user" @click="openLoginModal">LOGIN</button>
-      <span v-else>{{ user.first_name }}</span>
+      <div v-else class="user-info">
+        <img :src="avatarUrl" class="avatar" />
+        <!-- <span>{{ user.first_name }}</span> -->
+        <button @click="logout">LOGOUT</button>
+      </div>
     </div>
   </div>
 </template>
@@ -15,9 +19,19 @@
 <script>
 export default {
   props: ["user"],
+  computed: {
+    avatarUrl() {
+      return this.user && this.user.avatar
+        ? `${process.env.VUE_APP_ROOT_API}/storage/avatars/${this.user.avatar}`
+        : "";
+    },
+  },
   methods: {
     openLoginModal() {
       this.$emit("openLoginModal");
+    },
+    logout() {
+      this.$emit("logout");
     },
   },
 };
@@ -53,5 +67,15 @@ export default {
 .nav-links a:hover,
 .nav-links button:hover {
   text-decoration: underline;
+}
+.user-info {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 </style>
