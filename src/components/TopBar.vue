@@ -8,21 +8,31 @@
       <router-link to="/blog">BLOG</router-link>
       <router-link to="/cart">CART (0)</router-link>
       <button v-if="!user" @click="openLoginModal">LOGIN</button>
-      <div v-else class="user-info">
-        <img :src="avatarUrl" class="avatar" />
+      <div v-else class="user-info" @click="openUserSettingsModal">
+        <img :src="user.avatar" class="avatar" />
         <button @click="logout">LOGOUT</button>
       </div>
     </div>
+    <UserSettingsModal
+      :user="user"
+      :isVisible="isUserSettingsModalVisible"
+      @close="closeUserSettingsModal"
+    />
   </div>
 </template>
 
 <script>
+import UserSettingsModal from "./UserSettingsModal.vue";
+
 export default {
+  components: {
+    UserSettingsModal,
+  },
   props: ["user"],
-  computed: {
-    avatarUrl() {
-      return this.user && this.user.avatar ? this.user.avatar : "";
-    },
+  data() {
+    return {
+      isUserSettingsModalVisible: false,
+    };
   },
   methods: {
     openLoginModal() {
@@ -30,6 +40,12 @@ export default {
     },
     logout() {
       this.$emit("logout");
+    },
+    openUserSettingsModal() {
+      this.isUserSettingsModalVisible = true;
+    },
+    closeUserSettingsModal() {
+      this.isUserSettingsModalVisible = false;
     },
   },
 };
@@ -69,6 +85,7 @@ export default {
 .user-info {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 .avatar {
   width: 30px;
