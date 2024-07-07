@@ -57,6 +57,7 @@ export default {
         }
 
         this.$emit("loginSuccess", user); // Emit loginSuccess event
+        window.location.reload();
       } catch (error) {
         console.error(error);
       }

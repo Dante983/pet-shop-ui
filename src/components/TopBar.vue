@@ -21,9 +21,7 @@ export default {
   props: ["user"],
   computed: {
     avatarUrl() {
-      return this.user && this.user.avatar
-        ? `${process.env.VUE_APP_ROOT_API}/storage/${this.user.avatar}`
-        : "";
+      return this.user && this.user.avatar ? this.user.avatar : "";
     },
   },
   methods: {
