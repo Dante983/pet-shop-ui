@@ -10,7 +10,6 @@
       <button v-if="!user" @click="openLoginModal">LOGIN</button>
       <div v-else class="user-info">
         <img :src="avatarUrl" class="avatar" />
-        <!-- <span>{{ user.first_name }}</span> -->
         <button @click="logout">LOGOUT</button>
       </div>
     </div>
@@ -23,7 +22,7 @@ export default {
   computed: {
     avatarUrl() {
       return this.user && this.user.avatar
-        ? `${process.env.VUE_APP_ROOT_API}/storage/avatars/${this.user.avatar}`
+        ? `${process.env.VUE_APP_ROOT_API}/storage/${this.user.avatar}`
         : "";
     },
   },
