@@ -1,6 +1,11 @@
 <template>
   <div id="app">
-    <top-bar @openLoginModal="showLoginModal" :user="user" @logout="logout" />
+    <top-bar
+      @openLoginModal="showLoginModal"
+      :user="user"
+      @logout="logout"
+      @openUserSettings="openUserSettingsModal"
+    />
     <router-view></router-view>
     <LoginModal
       :isVisible="isLoginModalVisible"
@@ -14,6 +19,11 @@
       @signUpSuccess="handleSignUpSuccess"
       @openLogin="openLoginModal"
     />
+    <UserSettingsModal
+      :user="user"
+      :isVisible="isUserSettingsModalVisible"
+      @close="isUserSettingsModalVisible = false"
+    />
   </div>
 </template>
 
@@ -22,17 +32,21 @@ import axios from "axios";
 import TopBar from "./components/TopBar.vue";
 import LoginModal from "./components/LoginModal.vue";
 import SignUpModal from "./components/SignUpModal.vue";
+import UserSettingsModal from "./components/UserSettingsModal.vue";
+import Cookies from "js-cookie";
 
 export default {
   components: {
     TopBar,
     LoginModal,
     SignUpModal,
+    UserSettingsModal,
   },
   data() {
     return {
       isLoginModalVisible: false,
       isSignUpModalVisible: false,
+      isUserSettingsModalVisible: false,
       user: null,
     };
   },
@@ -53,8 +67,11 @@ export default {
       this.isSignUpModalVisible = true;
       this.isLoginModalVisible = false;
     },
+    openUserSettingsModal() {
+      this.isUserSettingsModalVisible = true;
+    },
     async autoLogin() {
-      const token = localStorage.getItem("token");
+      const token = Cookies.get("token") || localStorage.getItem("token");
       if (token) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         try {
@@ -62,11 +79,13 @@ export default {
             `${process.env.VUE_APP_ROOT_API}/api/v1/user`
           );
           this.user = response.data;
+          localStorage.setItem("token", token); // Ensure token is in localStorage
         } catch (error) {
           console.error("Error fetching user data:", error);
-          localStorage.removeItem("token");
-          delete axios.defaults.headers.common["Authorization"];
+          this.clearAuthData();
         }
+      } else {
+        this.showLoginModal();
       }
     },
     logout() {
@@ -74,12 +93,7 @@ export default {
         .get(`${process.env.VUE_APP_ROOT_API}/api/v1/user/logout`)
         .then((response) => {
           console.log(response.data.message);
-
-          // Clear the user data and token from local storage
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
-          localStorage.removeItem("avatar_url");
-          this.user = null;
+          this.clearAuthData();
         })
         .catch((error) => {
           console.error(error);
@@ -88,6 +102,14 @@ export default {
     showLoginModal() {
       this.isLoginModalVisible = true;
       this.isSignUpModalVisible = false;
+    },
+    clearAuthData() {
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("avatar_url");
+      Cookies.remove("token");
+      delete axios.defaults.headers.common["Authorization"];
+      this.user = null;
     },
   },
   created() {

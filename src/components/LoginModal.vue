@@ -28,6 +28,7 @@
 
 <script>
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export default {
   props: ["isVisible"],
@@ -52,6 +53,8 @@ export default {
 
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
+        Cookies.set("token", token, { expires: 1, path: "/" });
+
         if (avatar_url) {
           localStorage.setItem("avatar_url", avatar_url);
         }
