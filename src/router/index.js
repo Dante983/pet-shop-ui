@@ -6,6 +6,7 @@ import Cart from "@/views/Cart.vue";
 import RecoverPassword from "@/views/RecoverPassword.vue";
 import ResetPassword from "@/views/ResetPassword.vue";
 import AdminDashboard from "@/views/AdminDashboard.vue";
+import Customers from "@/views/Customers.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
 
 const routes = [
@@ -51,6 +52,11 @@ const routes = [
         path: "",
         name: "AdminDashboard",
         component: AdminDashboard,
+      },
+      {
+        path: "customers",
+        name: "Customers",
+        component: Customers,
       },
       // Add other admin routes here
     ],
