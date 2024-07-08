@@ -24,6 +24,31 @@
           </div>
         </div>
       </div>
+      <div class="user-orders">
+        <h3>Latest orders</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Order UUID</th>
+              <th>Status</th>
+              <th>Download invoice</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="order in orders" :key="order.uuid">
+              <td>{{ order.uuid }}</td>
+              <td>
+                <span :class="statusClass(order.status)">{{
+                  order.status
+                }}</span>
+              </td>
+              <td>
+                <button @click="downloadInvoice(order.uuid)">Download</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +56,43 @@
 <script>
 export default {
   props: ["user", "isVisible"],
+  data() {
+    return {
+      orders: [
+        { uuid: "083d0036-9616-3f1e-9b03-4fe51ad2e1c2", status: "Open" },
+        {
+          uuid: "083d0036-9616-3f1e-9b03-4fe51ad2e1c2",
+          status: "Pending payment",
+        },
+        { uuid: "083d0036-9616-3f1e-9b03-4fe51ad2e1c2", status: "Paid" },
+        { uuid: "083d0036-9616-3f1e-9b03-4fe51ad2e1c2", status: "Shipped" },
+        { uuid: "083d0036-9616-3f1e-9b03-4fe51ad2e1c2", status: "Cancelled" },
+      ],
+    };
+  },
+  methods: {
+    closeModal() {
+      this.$emit("close");
+    },
+    statusClass(status) {
+      switch (status) {
+        case "Open":
+          return "status-open";
+        case "Pending payment":
+          return "status-pending";
+        case "Paid":
+          return "status-paid";
+        case "Shipped":
+          return "status-shipped";
+        case "Cancelled":
+          return "status-cancelled";
+      }
+    },
+    downloadInvoice(uuid) {
+      // Add your download invoice logic here
+      console.log(`Downloading invoice for order ${uuid}`);
+    },
+  },
 };
 </script>
 
@@ -63,11 +125,13 @@ export default {
   right: 10px;
   cursor: pointer;
   font-size: 24px;
+  color: black;
 }
 
 .user-header {
   display: flex;
   align-items: center;
+  color: black;
 }
 
 .avatar-large {
@@ -90,5 +154,46 @@ export default {
 .user-details > div {
   flex: 1 1 50%;
   margin-bottom: 10px;
+  color: black;
+}
+
+.user-orders {
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: white;
+}
+
+.status-open {
+  color: blue;
+}
+
+.status-pending {
+  color: orange;
+}
+
+.status-paid {
+  color: green;
+}
+
+.status-shipped {
+  color: teal;
+}
+
+.status-cancelled {
+  color: red;
 }
 </style>
