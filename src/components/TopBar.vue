@@ -30,6 +30,7 @@ export default {
     },
     logout() {
       this.$emit("logout");
+      this.$router.push("/");
     },
     openUserSettingsModal() {
       this.$emit("openUserSettings");

@@ -5,7 +5,8 @@ import Blog from "@/views/Blog.vue";
 import Cart from "@/views/Cart.vue";
 import RecoverPassword from "@/views/RecoverPassword.vue";
 import ResetPassword from "@/views/ResetPassword.vue";
-import ProductDetail from "@/views/ProductDetail.vue";
+import AdminDashboard from "@/views/AdminDashboard.vue";
+import AdminLayout from "@/layouts/AdminLayout.vue";
 
 const routes = [
   {
@@ -39,15 +40,40 @@ const routes = [
     component: ResetPassword,
   },
   {
-    path: "/products/:uuid",
-    name: "ProductDetail",
-    component: ProductDetail,
+    path: "/admin",
+    component: AdminLayout,
+    meta: {
+      requiresAuth: true,
+      isAdmin: true,
+    },
+    children: [
+      {
+        path: "",
+        name: "AdminDashboard",
+        component: AdminDashboard,
+      },
+      // Add other admin routes here
+    ],
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+  const isAdminRoute = to.matched.some((record) => record.meta.isAdmin);
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (requiresAuth && !user) {
+    next("/");
+  } else if (isAdminRoute && (!user || !user.is_admin)) {
+    next("/");
+  } else {
+    next();
+  }
 });
 
 export default router;

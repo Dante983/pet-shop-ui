@@ -28,7 +28,6 @@
 
 <script>
 import axios from "axios";
-import Cookies from "js-cookie";
 
 export default {
   props: ["isVisible"],
@@ -38,6 +37,7 @@ export default {
       password: "",
     };
   },
+
   methods: {
     async login() {
       try {
@@ -53,14 +53,17 @@ export default {
 
         localStorage.setItem("user", JSON.stringify(user));
         localStorage.setItem("token", token);
-        Cookies.set("token", token, { expires: 1, path: "/" });
-
         if (avatar_url) {
           localStorage.setItem("avatar_url", avatar_url);
         }
 
-        this.$emit("loginSuccess", user); // Emit loginSuccess event
-        window.location.reload();
+        this.$emit("loginSuccess", user);
+
+        if (user.is_admin) {
+          this.$router.push("/admin");
+        } else {
+          window.location.reload();
+        }
       } catch (error) {
         console.error(error);
       }
