@@ -5,6 +5,7 @@ import Blog from "@/views/Blog.vue";
 import Cart from "@/views/Cart.vue";
 import RecoverPassword from "@/views/RecoverPassword.vue";
 import ResetPassword from "@/views/ResetPassword.vue";
+import ProductDetail from "@/views/ProductDetail.vue";
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: "/forgot-password",
     name: "reset-password",
     component: ResetPassword,
+  },
+  {
+    path: "/products/:uuid",
+    name: "ProductDetail",
+    component: ProductDetail,
   },
 ];
 
