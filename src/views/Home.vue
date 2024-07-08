@@ -24,7 +24,7 @@
           <img :src="product.image" :alt="product.title" />
           <div class="product-info">
             <h3>{{ product.title }}</h3>
-            <p>{{ product.brand }}</p>
+            <p v-if="product.brand">{{ product.brand.title }}</p>
             <p>{{ product.price }} kn</p>
           </div>
         </div>
@@ -53,7 +53,7 @@
           <img :src="product.image" :alt="product.title" />
           <div class="product-info">
             <h3>{{ product.title }}</h3>
-            <p>{{ product.brand }}</p>
+            <p v-if="product.brand">{{ product.brand.title }}</p>
             <p>{{ product.price }} kn</p>
           </div>
         </div>
@@ -87,10 +87,12 @@ export default {
   },
   methods: {
     async fetchProducts() {
+      console.log("Fetching products...");
       try {
         const response = await axios.get(
           `${process.env.VUE_APP_ROOT_API}/api/v1/products`
         );
+        console.log("Products fetched:", response.data);
         this.products = response.data;
         this.filteredProducts = this.products;
       } catch (error) {
@@ -99,8 +101,10 @@ export default {
     },
     filterProducts() {
       if (this.searchQuery) {
-        this.filteredProducts = this.products.filter((product) =>
-          product.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        this.filteredProducts = this.products.filter(
+          (product) =>
+            product.title &&
+            product.title.toLowerCase().includes(this.searchQuery.toLowerCase())
         );
       } else {
         this.filteredProducts = this.products;

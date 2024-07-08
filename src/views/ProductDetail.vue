@@ -1,15 +1,17 @@
 <template>
-  <div class="product-detail">
+  <div v-if="product.title" class="product-detail">
     <div class="breadcrumb">
       <router-link to="/">Home</router-link> /
-      <span>{{ product.category }}</span> / <span>{{ product.name }}</span>
+      <span v-if="product.category">{{ product.category.title }}</span> /
+      <span v-if="product.brand">{{ product.brand.title }}</span> /
+      <span>{{ product.title }}</span>
     </div>
     <div class="product-main">
       <img :src="product.image" alt="Product Image" class="product-image" />
       <div class="product-info">
-        <h1>{{ product.name }}</h1>
-        <h2>{{ product.brand }}</h2>
-        <h3>{{ product.category }}</h3>
+        <h1>{{ product.title }}</h1>
+        <h2 v-if="product.brand">{{ product.brand.title }}</h2>
+        <h3 v-if="product.category">{{ product.category.title }}</h3>
         <p class="product-price">{{ product.price }} kn</p>
         <div class="quantity-selector">
           <button @click="decreaseQuantity">-</button>
@@ -23,18 +25,9 @@
       <h4>Description</h4>
       <p>{{ product.description }}</p>
     </div>
-    <div class="product-composition">
-      <h4>Composition</h4>
-      <p>{{ product.composition }}</p>
-    </div>
-    <div class="product-ingredients">
-      <h4>Analytical Ingredients</h4>
-      <p>{{ product.ingredients }}</p>
-    </div>
-    <div class="product-nutritional">
-      <h4>Nutritional Composition</h4>
-      <p>{{ product.nutritional }}</p>
-    </div>
+  </div>
+  <div v-else>
+    <p>Loading...</p>
   </div>
 </template>
 
