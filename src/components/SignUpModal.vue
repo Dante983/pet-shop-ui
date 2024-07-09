@@ -40,6 +40,9 @@
           >
         </div>
         <button type="submit">Sign up</button>
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
       </form>
       <div class="links">
         <a href="#" @click.prevent="$emit('openLogin')"
@@ -63,12 +66,13 @@ export default {
       password: "",
       confirmPassword: "",
       is_marketing: false,
+      errorMessage: "",
     };
   },
   methods: {
     async signUp() {
       if (this.password !== this.confirmPassword) {
-        alert("Passwords do not match");
+        this.errorMessage = "Passwords do not match";
         return;
       }
 
@@ -95,7 +99,11 @@ export default {
 
         this.$emit("signUpSuccess", user);
         this.$emit("close");
+        window.location.reload();
       } catch (error) {
+        this.errorMessage =
+          error.response?.data?.message ||
+          "An error occurred. Please try again.";
         console.error(error);
       }
     },
@@ -198,5 +206,9 @@ button:hover {
 }
 .links a:hover {
   text-decoration: underline;
+}
+.error-message {
+  color: red;
+  margin-top: 10px;
 }
 </style>
