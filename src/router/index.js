@@ -9,6 +9,7 @@ import ProductDetail from "@/views/ProductDetail.vue";
 import AdminDashboard from "@/views/AdminDashboard.vue";
 import Customers from "@/views/Customers.vue";
 import AdminLayout from "@/layouts/AdminLayout.vue";
+import Products from "@/views/Products.vue";
 
 const routes = [
   {
@@ -63,6 +64,11 @@ const routes = [
         path: "customers",
         name: "Customers",
         component: Customers,
+      },
+      {
+        path: "products",
+        name: "Products",
+        component: Products,
       },
       // Add other admin routes here
     ],
