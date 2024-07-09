@@ -29,7 +29,15 @@
         </div>
         <div class="form-group">
           <label for="category">Category</label>
-          <input type="text" v-model="form.category" id="category" required />
+          <select v-model="form.category_uuid" id="category" required>
+            <option
+              v-for="category in categories"
+              :key="category.uuid"
+              :value="category.uuid"
+            >
+              {{ category.title }}
+            </option>
+          </select>
         </div>
         <div class="form-group">
           <label for="price">Price</label>
@@ -64,11 +72,12 @@ export default {
       form: {
         brand: "",
         name: "",
-        category: "",
+        category_uuid: "",
         price: "",
         description: "",
         image: null,
       },
+      categories: [],
       imageUrl: "",
       placeholderImage: placeholderImage,
     };
@@ -81,9 +90,9 @@ export default {
           const metadata = JSON.parse(newProduct.metadata);
           this.form = {
             uuid: newProduct.uuid || "",
-            brand: newProduct.brand_name || "",
+            brand: metadata.brand || "",
             name: newProduct.title || "",
-            category: newProduct.category_name || "",
+            category_uuid: newProduct.category_uuid || "",
             price: newProduct.price || "",
             description: newProduct.description || "",
             image: metadata.image || null,
@@ -96,6 +105,21 @@ export default {
     },
   },
   methods: {
+    async fetchCategories() {
+      try {
+        const response = await axios.get(
+          `${process.env.VUE_APP_ROOT_API}/api/v1/categories`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        this.categories = response.data;
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    },
     triggerFileUpload() {
       this.$refs.imageInput.click();
     },
@@ -115,7 +139,7 @@ export default {
         uuid: this.form.uuid,
         brand: this.form.brand,
         name: this.form.name,
-        category: this.form.category,
+        category_uuid: this.form.category_uuid,
         price: this.form.price,
         description: this.form.description,
         image: this.form.image ? this.form.image.name : "",
@@ -154,6 +178,9 @@ export default {
         console.error("Error deleting product:", error);
       }
     },
+  },
+  created() {
+    this.fetchCategories();
   },
 };
 </script>
@@ -215,7 +242,8 @@ label {
 }
 
 input,
-textarea {
+textarea,
+select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;

@@ -155,9 +155,6 @@ export default {
           }
         );
 
-        console.log("Full API Response:", response); // Log the full API response
-        console.log("API Response Data:", response.data); // Log the response data
-
         this.products = response.data.map((product) => {
           const metadata = JSON.parse(product.metadata);
           return {
@@ -166,8 +163,6 @@ export default {
             image: metadata.image || null,
           };
         });
-
-        console.log("Parsed Products:", this.products); // Log the parsed products
       } catch (error) {
         console.error("Error fetching products:", error);
       }
