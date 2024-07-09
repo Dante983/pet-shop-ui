@@ -6,36 +6,47 @@
       <form @submit.prevent="updateCustomer">
         <div class="avatar-upload">
           <img
-            :src="avatarPreview || userAvatar || placeholderImage"
-            @click="triggerFileInput"
+            :src="avatarUrl || placeholderImage"
+            alt="Avatar"
             class="avatar-placeholder"
+            @click="triggerFileUpload"
           />
           <input
             type="file"
-            ref="fileInput"
-            @change="handleFileChange"
+            ref="avatarInput"
+            @change="handleAvatarChange"
             style="display: none"
           />
         </div>
         <div>
-          <label for="first-name">First Name</label>
-          <input type="text" id="first-name" v-model="firstName" required />
+          <label for="first_name">First Name:</label>
+          <input
+            type="text"
+            id="first_name"
+            v-model="form.first_name"
+            required
+          />
         </div>
         <div>
-          <label for="last-name">Last Name</label>
-          <input type="text" id="last-name" v-model="lastName" required />
+          <label for="last_name">Last Name:</label>
+          <input type="text" id="last_name" v-model="form.last_name" required />
         </div>
         <div>
-          <label for="email">Email Address</label>
-          <input type="email" id="email" v-model="email" required />
+          <label for="email">Email:</label>
+          <input type="email" id="email" v-model="form.email" required />
         </div>
         <div>
-          <label for="phone">Phone Number</label>
-          <input type="text" id="phone" v-model="phoneNumber" required />
+          <label for="phone_number">Phone Number:</label>
+          <input
+            type="text"
+            id="phone_number"
+            v-model="form.phone_number"
+            required
+          />
         </div>
         <div>
-          <label for="address">Location</label>
-          <input type="text" id="address" v-model="address" required />
+          <label for="address">Address:</label>
+          <input type="text" id="address" v-model="form.address" required />
         </div>
         <button type="submit">Update Customer</button>
       </form>
@@ -45,59 +56,57 @@
 
 <script>
 import axios from "axios";
+import placeholderImage from "@/assets/placeholder.png";
 
 export default {
   props: ["isVisible", "user"],
   data() {
     return {
-      firstName: this.user ? this.user.first_name : "",
-      lastName: this.user ? this.user.last_name : "",
-      email: this.user ? this.user.email : "",
-      phoneNumber: this.user ? this.user.phone_number : "",
-      address: this.user ? this.user.address : "",
-      avatar: null,
-      avatarPreview: null,
-      userAvatar: this.user ? this.user.avatar : "",
-      placeholderImage: require("@/assets/placeholder.png"), // Update with actual path to placeholder image
+      form: {
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone_number: "",
+        address: "",
+        avatar: null, // Add avatar to form data
+      },
+      avatarUrl: "",
+      placeholderImage: placeholderImage,
     };
   },
   watch: {
-    user(newVal) {
-      if (newVal) {
-        this.firstName = newVal.first_name;
-        this.lastName = newVal.last_name;
-        this.email = newVal.email;
-        this.phoneNumber = newVal.phone_number;
-        this.address = newVal.address;
-        this.userAvatar = newVal.avatar;
-      }
+    user: {
+      immediate: true,
+      handler(newUser) {
+        if (newUser) {
+          this.form = { ...newUser };
+          this.avatarUrl = newUser.avatar || this.placeholderImage;
+        }
+      },
     },
   },
   methods: {
-    triggerFileInput() {
-      this.$refs.fileInput.click();
+    triggerFileUpload() {
+      this.$refs.avatarInput.click();
     },
-    handleFileChange(event) {
+    handleAvatarChange(event) {
       const file = event.target.files[0];
       if (file) {
-        this.avatar = file;
-        this.avatarPreview = URL.createObjectURL(file);
+        this.avatarUrl = URL.createObjectURL(file);
+        this.form.avatar = file; // Update form data with the file
       }
     },
     async updateCustomer() {
-      try {
-        const formData = new FormData();
-        formData.append("first_name", this.firstName);
-        formData.append("last_name", this.lastName);
-        formData.append("email", this.email);
-        formData.append("phone_number", this.phoneNumber);
-        formData.append("address", this.address);
-        if (this.avatar) {
-          formData.append("avatar", this.avatar);
-        }
+      const formData = new FormData();
+      Object.keys(this.form).forEach((key) => {
+        formData.append(key, this.form[key]);
+      });
 
+      console.log(this.form); // Add this line
+
+      try {
         await axios.put(
-          `${process.env.VUE_APP_ROOT_API}/api/v1/admin/user-edit/${this.user.uuid}`,
+          `${process.env.VUE_APP_ROOT_API}/api/v1/admin/user-edit/${this.form.uuid}`,
           formData,
           {
             headers: {

@@ -67,7 +67,7 @@
 import axios from "axios";
 import AddCustomerModal from "@/components/AddCustomerModal.vue";
 import EditCustomerModal from "@/components/EditCustomerModal.vue";
-import placeholderImage from "@/assets/placeholder.png"; // Update with the actual path to the placeholder image
+import placeholderImage from "@/assets/placeholder.png";
 
 export default {
   name: "Customers",
