@@ -84,8 +84,6 @@ export default {
           console.error("Error fetching user data:", error);
           this.clearAuthData();
         }
-      } else {
-        this.showLoginModal();
       }
     },
     logout() {

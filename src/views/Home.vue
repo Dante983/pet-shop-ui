@@ -92,7 +92,6 @@ export default {
         const response = await axios.get(
           `${process.env.VUE_APP_ROOT_API}/api/v1/products`
         );
-        console.log("Products fetched:", response.data);
         this.products = response.data;
         this.filteredProducts = this.products;
       } catch (error) {

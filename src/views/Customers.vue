@@ -21,7 +21,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.uuid">
+          <tr
+            v-for="user in users"
+            :key="user.uuid"
+            @mouseover="hoveredRow = user.uuid"
+            @mouseleave="hoveredRow = null"
+            :class="{ hovered: hoveredRow === user.uuid }"
+          >
             <td>
               <img
                 :src="user.avatar || placeholderImage"
@@ -36,8 +42,8 @@
             <td>{{ new Date(user.created_at).toLocaleDateString() }}</td>
             <td>{{ user.is_marketing ? "Yes" : "No" }}</td>
             <td>
-              <button @click="editUser(user.uuid)">Edit</button>
-              <button @click="deleteUser(user.uuid)">Delete</button>
+              <i class="fas fa-pencil-alt" @click="editUser(user)"></i>
+              <i class="fas fa-trash-alt" @click="deleteUser(user.uuid)"></i>
             </td>
           </tr>
         </tbody>
@@ -48,22 +54,35 @@
       @close="isAddCustomerModalVisible = false"
       @customerAdded="fetchUsers"
     />
+    <EditCustomerModal
+      :isVisible="isEditCustomerModalVisible"
+      :user="selectedUser"
+      @close="isEditCustomerModalVisible = false"
+      @customerUpdated="fetchUsers"
+    />
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import AddCustomerModal from "@/components/AddCustomerModal.vue";
+import EditCustomerModal from "@/components/EditCustomerModal.vue";
+import placeholderImage from "@/assets/placeholder.png"; // Update with the actual path to the placeholder image
 
 export default {
   name: "Customers",
   components: {
     AddCustomerModal,
+    EditCustomerModal,
   },
   data() {
     return {
       users: [],
+      hoveredRow: null,
       isAddCustomerModalVisible: false,
+      isEditCustomerModalVisible: false,
+      selectedUser: null,
+      placeholderImage: placeholderImage,
     };
   },
   methods: {
@@ -77,7 +96,10 @@ export default {
             },
           }
         );
-        this.users = response.data.data;
+        this.users = response.data.data.map((user) => ({
+          ...user,
+          avatar: user.avatar ? user.avatar : null,
+        }));
       } catch (error) {
         console.error("Error fetching users:", error);
       }
@@ -85,8 +107,9 @@ export default {
     openAddCustomerModal() {
       this.isAddCustomerModalVisible = true;
     },
-    editUser(uuid) {
-      this.$router.push(`/admin/edit-user/${uuid}`);
+    editUser(user) {
+      this.selectedUser = user;
+      this.isEditCustomerModalVisible = true;
     },
     async deleteUser(uuid) {
       try {
@@ -152,6 +175,13 @@ th {
   background-color: #f4f4f4;
 }
 
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 button {
   background-color: #4ec690;
   color: white;
@@ -164,10 +194,21 @@ button {
 button:last-child {
   background-color: #e74c3c;
 }
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+
+tr.hovered {
+  background-color: #f0f0f0;
+}
+
+.fas {
+  cursor: pointer;
   margin-right: 10px;
+}
+
+.fas.fa-pencil-alt {
+  color: #4ec690;
+}
+
+.fas.fa-trash-alt {
+  color: #e74c3c;
 }
 </style>

@@ -44,6 +44,7 @@ export default {
   },
   methods: {
     async fetchProduct() {
+      console.log("Fetching product...");
       const uuid = this.$route.params.uuid;
       try {
         const response = await axios.get(
