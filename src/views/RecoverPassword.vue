@@ -16,7 +16,7 @@
       <div class="modal-content">
         <span class="close" @click="linkSent = false">&times;</span>
         <p>Click on the URL and change your password:</p>
-        <a :href="recoveryLink">{{ recoveryLink }}</a>
+        <router-link :to="recoveryLink">{{ recoveryLink }}</router-link>
       </div>
     </div>
   </div>
@@ -43,7 +43,6 @@ export default {
           }
         );
 
-        localStorage.setItem("recoveryEmail", this.email); // Store email in local storage
         this.recoveryLink = response.data.recovery_link;
         this.linkSent = true;
       } catch (error) {

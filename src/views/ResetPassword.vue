@@ -1,22 +1,21 @@
 <template>
   <div class="reset-password">
-    <h2>Change password</h2>
-    <p>Your new password must be different from previous passwords.</p>
+    <h2>Reset Password</h2>
     <form @submit.prevent="resetPassword">
       <div>
-        <label for="password">New password</label>
+        <label for="password">New Password *</label>
         <input type="password" id="password" v-model="password" required />
       </div>
       <div>
-        <label for="confirm-password">Re-enter your new password</label>
+        <label for="confirmPassword">Confirm New Password *</label>
         <input
           type="password"
-          id="confirm-password"
+          id="confirmPassword"
           v-model="confirmPassword"
           required
         />
       </div>
-      <button type="submit">Change password</button>
+      <button type="submit">Reset Password</button>
     </form>
   </div>
 </template>
@@ -30,7 +29,7 @@ export default {
       email: "",
       password: "",
       confirmPassword: "",
-      token: this.$route.query.token,
+      token: this.$route.query.token, // Assume token is passed as a query parameter
     };
   },
   mounted() {
@@ -49,7 +48,6 @@ export default {
         return;
       }
 
-      console.log(this.$route.query);
       try {
         await axios.post(
           `${process.env.VUE_APP_ROOT_API}/api/v1/user/reset-password-token`,
@@ -61,12 +59,11 @@ export default {
           }
         );
 
-        alert("Password reset successfully.");
-        localStorage.removeItem("recoveryEmail");
-        this.$router.push("/");
+        alert("Password reset successfully");
+        this.$router.push("/"); // Redirect to login page after password reset
       } catch (error) {
         console.error(error);
-        alert("There was an error resetting the password. Please try again.");
+        alert("There was an error resetting your password. Please try again.");
       }
     },
   },
@@ -83,9 +80,6 @@ export default {
   text-align: center;
 }
 h2 {
-  margin-bottom: 20px;
-}
-p {
   margin-bottom: 20px;
 }
 form {
