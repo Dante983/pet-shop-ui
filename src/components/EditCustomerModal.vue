@@ -79,7 +79,10 @@ export default {
       immediate: true,
       handler(newUser) {
         if (newUser) {
-          this.form = { ...newUser };
+          this.form = {
+            ...newUser,
+            avatar: null, // Reset avatar field
+          };
           this.avatarUrl = newUser.avatar || this.placeholderImage;
         }
       },
@@ -97,28 +100,56 @@ export default {
       }
     },
     async updateCustomer() {
-      const formData = new FormData();
-      Object.keys(this.form).forEach((key) => {
-        formData.append(key, this.form[key]);
-      });
+      const formData = new URLSearchParams();
+      formData.append("first_name", this.form.first_name);
+      formData.append("last_name", this.form.last_name);
+      formData.append("email", this.form.email);
+      formData.append("phone_number", this.form.phone_number);
+      formData.append("address", this.form.address);
 
-      console.log(this.form); // Add this line
+      if (this.form.avatar) {
+        // Convert the avatar file to a base64 string and append to formData
+        const reader = new FileReader();
+        reader.readAsDataURL(this.form.avatar);
+        reader.onloadend = async () => {
+          formData.append("avatar", reader.result);
 
-      try {
-        await axios.put(
-          `${process.env.VUE_APP_ROOT_API}/api/v1/admin/user-edit/${this.form.uuid}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-              "Content-Type": "multipart/form-data",
-            },
+          try {
+            const response = await axios.put(
+              `${process.env.VUE_APP_ROOT_API}/api/v1/admin/user-edit/${this.form.uuid}`,
+              formData,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  "Content-Type": "application/x-www-form-urlencoded",
+                },
+              }
+            );
+            console.log("Response:", response.data);
+            this.$emit("customerUpdated");
+            this.$emit("close");
+          } catch (error) {
+            console.error("Error updating customer:", error);
           }
-        );
-        this.$emit("customerUpdated");
-        this.$emit("close");
-      } catch (error) {
-        console.error("Error updating customer:", error);
+        };
+      } else {
+        try {
+          const response = await axios.put(
+            `${process.env.VUE_APP_ROOT_API}/api/v1/admin/user-edit/${this.form.uuid}`,
+            formData,
+            {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+            }
+          );
+          console.log("Response:", response.data);
+          this.$emit("customerUpdated");
+          this.$emit("close");
+        } catch (error) {
+          console.error("Error updating customer:", error);
+        }
       }
     },
   },
