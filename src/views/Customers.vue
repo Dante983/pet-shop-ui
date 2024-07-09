@@ -2,9 +2,57 @@
   <div class="admin-customers">
     <div class="header">
       <h1>Customers</h1>
-      <button @click="openAddCustomerModal" class="add-new-button">
-        Add New Customer
-      </button>
+      <div class="header-actions">
+        <button @click="toggleFilterPanel" class="filter-button">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+        <button @click="openAddCustomerModal" class="add-new-button">
+          Add New Customer
+        </button>
+      </div>
+    </div>
+    <div v-if="showFilterPanel" class="filter-panel">
+      <div class="filter-row">
+        <input
+          type="text"
+          v-model="filters.name"
+          placeholder="Customer name"
+          @input="fetchFilteredCustomers"
+        />
+        <input
+          type="text"
+          v-model="filters.email"
+          placeholder="Customer email"
+          @input="fetchFilteredCustomers"
+        />
+        <input
+          type="text"
+          v-model="filters.phone"
+          placeholder="Customer phone"
+          @input="fetchFilteredCustomers"
+        />
+        <input
+          type="text"
+          v-model="filters.address"
+          placeholder="Customer address"
+          @input="fetchFilteredCustomers"
+        />
+        <input
+          type="date"
+          v-model="filters.date_created"
+          placeholder="Date created"
+          @input="fetchFilteredCustomers"
+        />
+        <select
+          v-model="filters.marketing_preferences"
+          @change="fetchFilteredCustomers"
+        >
+          <option value="">Marketing preferences</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
+        </select>
+        <button @click="resetFilters" class="reset-button">RESET</button>
+      </div>
     </div>
     <div class="table-container">
       <table>
@@ -91,10 +139,22 @@ export default {
       isEditCustomerModalVisible: false,
       selectedUser: null,
       confirmDeleteId: null,
+      showFilterPanel: false,
+      filters: {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        date_created: "",
+        marketing_preferences: "",
+      },
       placeholderImage: placeholderImage,
     };
   },
   methods: {
+    toggleFilterPanel() {
+      this.showFilterPanel = !this.showFilterPanel;
+    },
     async fetchUsers() {
       try {
         const response = await axios.get(
@@ -112,6 +172,38 @@ export default {
       } catch (error) {
         console.error("Error fetching users:", error);
       }
+    },
+    async fetchFilteredCustomers() {
+      const params = {};
+      Object.keys(this.filters).forEach((key) => {
+        if (this.filters[key]) {
+          params[key] = this.filters[key];
+        }
+      });
+      const response = await axios.get(
+        `${process.env.VUE_APP_ROOT_API}/api/v1/admin/user-listing`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          params,
+        }
+      );
+      this.users = response.data.data.map((user) => ({
+        ...user,
+        avatar: user.avatar ? user.avatar : null,
+      }));
+    },
+    resetFilters() {
+      this.filters = {
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        date_created: "",
+        marketing_preferences: "",
+      };
+      this.fetchUsers();
     },
     openAddCustomerModal() {
       this.isAddCustomerModalVisible = true;
@@ -171,8 +263,41 @@ export default {
   cursor: pointer;
 }
 
-.table-container {
-  overflow-x: auto;
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+.filter-button {
+  background-color: #4ec690;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.filter-panel {
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #f7f9fa;
+  border-radius: 5px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter-row input,
+.filter-row select {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  flex: 1;
 }
 
 table {

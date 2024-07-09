@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <top-bar
+      @openUserSettings="openUserSettingsModal"
       @openLoginModal="showLoginModal"
       :user="user"
       @logout="logout"
-      @openUserSettings="openUserSettingsModal"
     />
     <router-view></router-view>
     <LoginModal
@@ -24,6 +24,7 @@
       :isVisible="isUserSettingsModalVisible"
       @close="isUserSettingsModalVisible = false"
     />
+    <Footer />
   </div>
 </template>
 
@@ -34,6 +35,7 @@ import LoginModal from "./components/LoginModal.vue";
 import SignUpModal from "./components/SignUpModal.vue";
 import UserSettingsModal from "./components/UserSettingsModal.vue";
 import Cookies from "js-cookie";
+import Footer from "./components/Footer.vue";
 
 export default {
   components: {
@@ -41,6 +43,7 @@ export default {
     LoginModal,
     SignUpModal,
     UserSettingsModal,
+    Footer,
   },
   data() {
     return {
@@ -85,6 +88,13 @@ export default {
           this.clearAuthData();
         }
       }
+
+      // Redirect to appropriate route based on user role
+      if (localStorage.getItem("is_admin")) {
+        this.$router.push("/admin");
+      } else {
+        this.$router.push("/");
+      }
     },
     logout() {
       axios
@@ -105,6 +115,8 @@ export default {
       localStorage.removeItem("user");
       localStorage.removeItem("token");
       localStorage.removeItem("avatar_url");
+      localStorage.removeItem("is_admin");
+
       Cookies.remove("token");
       delete axios.defaults.headers.common["Authorization"];
       this.user = null;
@@ -122,5 +134,27 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  background-color: #4ec690;
+  color: white;
+  text-align: center;
+  padding: 10px;
 }
 </style>

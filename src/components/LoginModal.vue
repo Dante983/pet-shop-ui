@@ -4,6 +4,7 @@
       <span class="close" @click="$emit('close')">&times;</span>
       <h2>Login</h2>
       <form @submit.prevent="login">
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div>
           <label for="email">Email:</label>
           <input type="email" id="email" v-model="email" required />
@@ -35,11 +36,13 @@ export default {
     return {
       email: "",
       password: "",
+      errorMessage: "",
     };
   },
 
   methods: {
     async login() {
+      this.errorMessage = "";
       try {
         const response = await axios.post(
           `${process.env.VUE_APP_ROOT_API}/api/v1/user/login`,
@@ -60,11 +63,16 @@ export default {
         this.$emit("loginSuccess", user);
 
         if (user.is_admin) {
+          localStorage.setItem("is_admin", true); // Set admin flag
           this.$router.push("/admin");
         } else {
-          window.location.reload();
+          localStorage.removeItem("is_admin"); // Remove admin flag if not admin
+          this.$router.push("/");
         }
+
+        window.location.reload(); // Reload to trigger redirect logic
       } catch (error) {
+        this.errorMessage = "Invalid email or password. Please try again."; // Set the error message
         console.error(error);
       }
     },
@@ -105,5 +113,9 @@ export default {
 }
 .links a:hover {
   text-decoration: underline;
+}
+.error-message {
+  color: red;
+  margin-bottom: 20px;
 }
 </style>
