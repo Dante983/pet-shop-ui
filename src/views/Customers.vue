@@ -43,7 +43,15 @@
             <td>{{ user.is_marketing ? "Yes" : "No" }}</td>
             <td>
               <i class="fas fa-pencil-alt" @click="editUser(user)"></i>
-              <i class="fas fa-trash-alt" @click="deleteUser(user.uuid)"></i>
+              <i
+                v-if="confirmDeleteId !== user.uuid"
+                class="fas fa-trash-alt"
+                @click="confirmDelete(user.uuid)"
+              ></i>
+              <span v-else>
+                <i class="fas fa-check" @click="deleteUser(user.uuid)"></i>
+                <i class="fas fa-times" @click="cancelDelete"></i>
+              </span>
             </td>
           </tr>
         </tbody>
@@ -82,6 +90,7 @@ export default {
       isAddCustomerModalVisible: false,
       isEditCustomerModalVisible: false,
       selectedUser: null,
+      confirmDeleteId: null,
       placeholderImage: placeholderImage,
     };
   },
@@ -111,6 +120,12 @@ export default {
       this.selectedUser = user;
       this.isEditCustomerModalVisible = true;
     },
+    confirmDelete(uuid) {
+      this.confirmDeleteId = uuid;
+    },
+    cancelDelete() {
+      this.confirmDeleteId = null;
+    },
     async deleteUser(uuid) {
       try {
         await axios.delete(
@@ -122,6 +137,7 @@ export default {
           }
         );
         this.fetchUsers();
+        this.confirmDeleteId = null;
       } catch (error) {
         console.error("Error deleting user:", error);
       }
@@ -209,6 +225,14 @@ tr.hovered {
 }
 
 .fas.fa-trash-alt {
+  color: #e74c3c;
+}
+
+.fas.fa-check {
+  color: #4ec690;
+}
+
+.fas.fa-times {
   color: #e74c3c;
 }
 </style>
