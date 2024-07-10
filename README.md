@@ -1,24 +1,29 @@
-# pet-shop-ui
 
-## Project setup
+### Frontend README (Vue.js)
+
+```markdown
+# Pet Shop Frontend
+
+## Introduction
+This is the frontend application for the Pet Shop built using Vue.js.
+
+## Prerequisites
+- Node.js
+- npm
+
+## Installation
+
+### Step 1: Clone the repository
+```sh
+git clone https://github.com/yourusername/pet-shop-frontend.git
+cd pet-shop-frontend
 ```
+
 npm install
-```
+cp .env.example .env
+VITE_APP_BASE_URL=http://127.0.0.1:8000
+npm run dev
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## License
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[MIT](https://choosealicense.com/licenses/mit/)
