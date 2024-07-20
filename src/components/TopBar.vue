@@ -9,7 +9,7 @@
       <router-link to="/cart">CART (0)</router-link>
       <button v-if="!user" @click="openLoginModal">LOGIN</button>
       <div v-else class="user-info">
-        <img :src="user.avatar" class="avatar" @click="openUserSettingsModal" />
+        <img :src="avatarUrl" class="avatar" @click="openUserSettingsModal" />
         <button @click="logout">LOGOUT</button>
       </div>
     </div>
@@ -21,7 +21,9 @@ export default {
   props: ["user"],
   computed: {
     avatarUrl() {
-      return this.user && this.user.avatar ? this.user.avatar : "";
+      return this.user && this.user.avatar
+        ? this.user.avatar
+        : "@/assets/placeholder.png";
     },
   },
   methods: {

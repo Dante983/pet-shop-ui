@@ -5,13 +5,14 @@
       <h2>Login</h2>
       <form @submit.prevent="login">
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
-        <div>
+        <div class="form-group">
           <label for="email">Email:</label>
-          <input type="email" id="email" v-model="email" required />
+          <input type="email" id="email" name="email" />
         </div>
-        <div>
+
+        <div class="form-group">
           <label for="password">Password:</label>
-          <input type="password" id="password" v-model="password" required />
+          <input type="password" id="password" name="password" />
         </div>
         <button type="submit">Login</button>
       </form>
@@ -92,28 +93,85 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 .modal-content {
   background-color: white;
-  padding: 20px;
+  padding: 40px;
   border-radius: 10px;
-  width: 300px;
+  width: 350px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
+
 .close {
   float: right;
   cursor: pointer;
+  font-size: 1.5em;
 }
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form div {
+  margin-bottom: 15px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group input {
+  margin-top: 5px;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4ec690;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #3db580;
+}
+
 .links {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
 }
+
 .links a {
   color: #4ec690;
   text-decoration: none;
 }
+
 .links a:hover {
   text-decoration: underline;
 }
+
 .error-message {
   color: red;
   margin-bottom: 20px;

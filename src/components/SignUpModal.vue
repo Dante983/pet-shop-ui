@@ -6,30 +6,31 @@
       <h2>Sign up</h2>
       <form @submit.prevent="signUp">
         <div class="name-fields">
-          <div>
+          <div class="form-group">
             <label for="first-name">First Name *</label>
             <input type="text" id="first-name" v-model="firstName" required />
           </div>
-          <div>
+          <div class="form-group">
             <label for="last-name">Last Name *</label>
             <input type="text" id="last-name" v-model="lastName" required />
           </div>
         </div>
-        <div>
-          <label for="email">Email Address *</label>
-          <input type="email" id="email" v-model="email" required />
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input type="email" id="email" name="email" />
         </div>
-        <div>
+
+        <div class="form-group">
           <label for="password">Password *</label>
-          <input type="password" id="password" v-model="password" required />
+          <input type="password" id="password" name="password" />
         </div>
-        <div>
+
+        <div class="form-group">
           <label for="confirm-password">Confirm Password *</label>
           <input
             type="password"
             id="confirm-password"
-            v-model="confirmPassword"
-            required
+            name="confirm-password"
           />
         </div>
         <div class="newsletter">
@@ -123,92 +124,87 @@ export default {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 .modal-content {
   background-color: white;
-  padding: 20px;
+  padding: 40px;
   border-radius: 10px;
-  width: 400px;
-  text-align: center;
-  position: relative;
+  width: 350px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
 }
+
 .close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
+  float: right;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 1.5em;
 }
-.logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 10px;
-}
+
 h2 {
   margin-bottom: 20px;
+  color: #333;
+  text-align: center;
 }
+
 form {
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
-label {
-  align-self: flex-start;
-  margin-bottom: 5px;
-}
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px;
+
+form div {
   margin-bottom: 15px;
-  border: 1px solid #ccc;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group input {
+  margin-top: 5px;
+}
+
+label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+input {
+  padding: 10px;
   border-radius: 5px;
+  border: 1px solid #ccc;
 }
-.name-fields {
-  display: flex;
-  justify-content: space-between;
-}
-.name-fields > div {
-  flex: 1;
-  margin-right: 10px;
-}
-.name-fields > div:last-child {
-  margin-right: 0;
-}
-.newsletter {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-}
-.newsletter input {
-  margin-right: 10px;
-}
+
 button {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
   background-color: #4ec690;
   color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  width: 100%;
   cursor: pointer;
+  font-weight: bold;
 }
+
 button:hover {
-  background-color: #45b382;
+  background-color: #3db580;
 }
+
 .links {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   margin-top: 20px;
 }
+
 .links a {
   color: #4ec690;
   text-decoration: none;
 }
+
 .links a:hover {
   text-decoration: underline;
 }
+
 .error-message {
   color: red;
-  margin-top: 10px;
+  margin-bottom: 20px;
 }
 </style>
